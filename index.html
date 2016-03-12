@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ИГЭУ САПР</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/flaticon.css">
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/svg.min.js"></script>
+    <script src="js/csg.js"></script>
+</head>
+<body>
+<!-- Modal -->
+<div class="modal fade" id="cubeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Создать паралепипед</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Ширина</label>
+                                <div class="col-sm-10">
+                                    <input placeholder="0" class="form-control width" name="width">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Высота</label>
+                                <div class="col-sm-10">
+                                    <input placeholder="0" class="form-control height" name="height">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Глубина</label>
+                                <div class="col-sm-10">
+                                    <input placeholder="0" class="form-control depth" name="depth">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
+                <button type="button" class="btn btn-primary accept">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="cylinderModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Создать цилиндр</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Высота</label>
+                                <div class="col-sm-10">
+                                    <input placeholder="0" class="form-control width" name="width">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Радиус</label>
+                                <div class="col-sm-10">
+                                    <input placeholder="0" class="form-control radius" name="radius1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
+                <button type="button" class="btn btn-primary accept">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="coneModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Создать конус</h4>
+            </div>
+            <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Высота</label>
+                            <div class="col-sm-10">
+                                <input placeholder="0" class="form-control width" name="width">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Радиус 1</label>
+                            <div class="col-sm-10">
+                                <input placeholder="0" class="form-control radius1" name="radius1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Радиус 2</label>
+                            <div class="col-sm-10">
+                                <input placeholder="0" class="form-control radius2" name="radius2">
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
+                <button type="button" class="btn btn-primary accept">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sphereModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Создать паралепипед</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Радиус</label>
+                        <div class="col-sm-10">
+                            <input placeholder="0" class="form-control radius" name="radius">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
+                <button type="button" class="btn btn-primary accept">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">ИГЭУ САПР</a>
+        </div>
+        <p class="navbar-text navbar-right">© Игорь Майоров</p>
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container">
+    <div class="row">
+        <button data-toggle="modal" data-target="#cubeModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-rectangular"></i></button>
+        <button data-toggle="modal" data-target="#cylinderModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-cylinder"></i></button>
+        <button data-toggle="modal" data-target="#coneModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-cone"></i></button>
+        <button data-toggle="modal" data-target="#sphereModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-sphere"></i></button>
+        <div class="arrows" style="display: none">
+            <button direction="left" class="btn btn-info btn-lg"><i class="glyphicon glyphicon-arrow-left"></i></button>
+            <button direction="right" class="btn btn-info btn-lg"><i class="glyphicon glyphicon-arrow-right"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row" id="drawing"></div>
+        </div>
+        <div class="col-md-6">
+            <div class="row" id="modeling"></div>
+        </div>
+    </div>
+
+</div>
+<script>
+    var container, stats;
+    var camera, controls, scene, renderer;
+
+    // Зададим параметры
+    var colors = [['#fff', '#000']/*,['#2ecc71','#27ae60'],['#3498db','#2980b9'],['#9b59b6','#8e44ad'],['#34495e', '#2c3e50']*/];
+    var border_width = 2;
+    var axisPadding = 7;
+    var paddingBetweenAxis = 4;
+    var window_width = $('#drawing').width();
+
+    // Задаем переменные
+    var elems = []; // Массив, в котором будет хранится вся инфа о имеющихся элементах на странице. Есть идея все это сеарилизировать на сервере
+    var draw;
+
+
+    // Инициализируем 2D SVG поле
+    function init2D() {
+        draw = SVG('drawing').size($('#drawing').width(), $('#drawing').width());
+    }
+
+    // Получаем рандомный цвет
+    function getRandomColor(){
+        return colors[Math.floor(Math.random() * (colors.length))];
+    }
+
+    // Находим использованное модальное окно на основе closest
+    function getClosestModal(e){
+        return $(e).closest('.modal');
+    }
+
+    // Получаем значения из модального окна в объекте
+    function getValuesFromModal(e){
+        var obj = new Object();
+        getClosestModal(e).find('input').each(function(){
+            obj[$(this).attr('name')] = parseInt($(this).val());
+            $(this).val('');
+        });
+        return obj;
+    }
+
+    // Получаем общую ширину всех элементов
+    function getTotalWidth() {
+        total_width = 0;
+        $.each(elems, function(i, e){
+            total_width += e.values.width;
+        });
+        return total_width;
+    }
+
+    function getDashLength(width){ //  Подбор длины штриха осевой под коффициент 6 - типо крутая САПР, как компасс
+        var i = 1;
+        var length = false;
+        while(length > 16 || !length){
+            i++;
+            length = ((width + 4 + axisPadding*2)/i - 4);
+            console.log(length + ' | ' + i);
+        }
+        return length;
+    }
+
+    // Двигаем элементы
+    function moveElems(width, direction){
+        $.each(elems, function(i, e){
+            e.object2d.dx((parseInt(width))/2 * -1 * direction);
+        });
+    }
+
+    // Добавляем куб
+    function addCube(values, total_width, direction){
+    	return 0;
+    }
+
+    // Добавляем квадрат
+    function addRect(values, total_width, direction, withAxis) {
+        var randColor = getRandomColor();
+        var group = draw.group()
+        group.add(draw.rect(values.width - border_width/2, values.height - border_width/2)
+                .fill(randColor[0])
+                .stroke({linecap: 'square', color: randColor[1], width: border_width})
+                .x((total_width * direction + (elems.length > 0 ? border_width * -1 * direction : 0) + window_width - values.width )/2)
+                .y((window_width - values.height + border_width)/2));
+        if(withAxis){
+            group.add(
+                    draw.line((total_width + window_width - values.width )/2 - axisPadding, window_width/2, (total_width + window_width - values.width )/2 + values.width + axisPadding, window_width/2)
+                            .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'})
+            );
+        }
+        return group;
+    }
+
+    function addSphere(values, total_width, direction){
+    	return 0;
+    }
+
+    function addCircle(values, total_width, direction){
+        var randColor = getRandomColor();
+        var group = draw.group()
+        group.add(draw.circle(values.radius*2)
+                .x((total_width * direction + window_width - (values.radius*2 - (elems.length > 0 ? 0 : border_width * -1 * direction)))/2)
+                .y((window_width - (values.radius*2 - border_width))/2)
+                .fill(randColor[0])
+                .stroke({linecap: 'square', color: randColor[1], width: border_width}));
+        group.add(
+                draw.line(
+                        window_width/2,
+                        (total_width + window_width - values.width )/2 - axisPadding,
+                        window_width/2,
+                        (total_width + window_width - values.width )/2 + values.width + axisPadding
+
+                )
+                        .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'})
+        );
+        group.add(
+                draw.line((total_width + window_width - values.width )/2 - axisPadding, window_width/2, (total_width + window_width - values.width )/2 + values.width + axisPadding, window_width/2)
+                        .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'})
+        );
+        return group;
+    }
+
+    // Добавляем полигон / трапецию
+    function addPolygone(values, total_width, direction){
+        var randColor = getRandomColor();
+        var coord = [];
+        var group = draw.group()
+        if(values.radius2 != 0){
+            coord.push([(total_width * direction + window_width - (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width + (values.radius2*2 - (values.radius1 == 0 ? border_width : 0)))/2]);
+        }
+        coord.push([(total_width * direction + window_width - (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width - (values.radius2*2 - (values.radius1 == 0 ? border_width*2 : 0)/* */))/2]);
+        coord.push([(total_width * direction + window_width + (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width - (values.radius1*2 - (values.radius2 == 0 ? border_width : 0) /* + border_width*2*/))/2]);
+
+        if(values.radius1 != 0){
+            coord.push([(total_width * direction + window_width + (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width + (values.radius1*2 - (values.radius2 == 0 ? border_width : 0)))/2]);
+        }
+        group.add(draw.polygon(coord).fill(randColor[0])
+                .stroke({linecap: 'square', color: randColor[1], width: border_width}));
+        group.add(draw.line((total_width * direction + window_width - values.width)/2 - axisPadding, window_width/2, (total_width * direction + window_width - values.width)/2 + values.width + axisPadding, window_width/2)
+                .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'}))
+        return group;
+    }
+
+    // Добавляем цилиндр / конус
+    function addCone(values, total_width, direction){
+    	//Добавляем конус
+    	return 0;
+    }
+
+    init2D();
+    
+    $('.btn.accept').click(function(){
+        getClosestModal(this).modal('hide'); // Закрываем модальное окно
+        var values = getValuesFromModal(this); // Получаем данные из модального окна
+        var action = getClosestModal(this).attr('id'); // Получаем че это вообще за модальное окно было
+        var object;
+        $('.arrows').show(); // Показываем стрелочки
+        $('.arrows button').click(function(){ // вешаем событие на клик по стрелочке
+            $('.arrows').hide(); // Скрываем стрелочки
+            var direction = $(this).attr('direction') == 'right' ? 1 : -1; // Вычисляем направление
+            total_width = getTotalWidth(); // Получаем общую ширину
+            moveElems(values.width, direction); // Двигаем элементы в сторону
+            switch(action){ // Тут понятно, выбираем действие/фигуру
+                case 'cubeModal': // Кубик
+                    object = [addRect(values, total_width, direction), addCube(values, total_width, direction)]; break;
+                case 'cylinderModal': // Цилиндр
+                        values.radius2 = values.radius1;
+                        values.height = values.radius2 * 2;
+                    object = [addRect(values, total_width, direction, true), addCone(values, total_width, direction)]; break;
+                case 'coneModal':
+                    object = [addPolygone(values, total_width, direction), addCone(values, total_width, direction)]; break;
+                case 'sphereModal':
+                    values.width = values.radius * 2;
+                    object = [addCircle(values, total_width, direction), addSphere(values, total_width, direction)]; break;
+                default:
+                    false;
+            }
+            elems.push({
+                object2d: object[0], // Добавляем квадрат
+                object3d: object[1], // Добавляем куб
+                values: values // запоминаем размеры, для оптимизации и быстродействия
+            });
+            render();
+            $('.arrows button').unbind(); // Убиваем событие на стрелочки
+        });
+        if(elems.length < 1){ // если создаем первый элемент,
+            $('.arrows button:first-child').click(); // то кликаем на первую попавшуюся стрелочку программой,
+        } // нахрена ее тыкать человеку
+    });
+
+
+
+</script>
+</body>
+</html>

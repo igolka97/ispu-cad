@@ -1,0 +1,53 @@
+@font-face {
+	font-family: "Flaticon";
+	src: url("../fonts/flaticon.eot");
+	src: url("../fonts/flaticon.eot#iefix") format("embedded-opentype"),
+	url("../fonts/flaticon.woff") format("woff"),
+	url("../fonts/flaticon.ttf") format("truetype"),
+	url("../fonts/flaticon.svg") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {
+	font-family: Flaticon;
+        font-size: 30px;
+font-style: normal;
+}.flaticon-cone:before {
+	content: "\e000";
+}
+.flaticon-cylinder:before {
+	content: "\e001";
+}
+.flaticon-rectangular:before {
+	content: "\e002";
+}
+.flaticon-sphere:before {
+	content: "\e003";
+}
+
+
+#drawing, #modeling {
+	border-color: #ccc;
+	border-color: rgba(82, 168, 236, .8);
+	outline: 0;
+	outline: thin dotted\9;
+	-webkit-box-shadow: 0 0 8px rgba(82, 168, 236, .6);
+	box-shadow: 0 0 8px rgba(82, 168, 236, .6);
+	display: block;
+	width: 100%;
+	padding: 6px 12px;
+	margin-top: 20px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+canvas { width: 100%; height: 100%; background: transparent }
+.arrows {
+	display: inline-block;
+}
+.arrows i {font-size: 33px;}
