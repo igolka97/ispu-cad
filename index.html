@@ -191,23 +191,6 @@
 </div>
 <script>
 
-    // Зададим параметры
-    var colors = [['#fff', '#000']/*,['#2ecc71','#27ae60'],['#3498db','#2980b9'],['#9b59b6','#8e44ad'],['#34495e', '#2c3e50']*/];
-    var border_width = 2;
-    var axisPadding = 7;
-    var paddingBetweenAxis = 4;
-    var window_width = $('#drawing').width();
-
-    // Задаем переменные
-    // 2D
-    var elems = []; // Массив, в котором будет хранится вся инфа о имеющихся элементах на странице. Есть идея все это сеарилизировать на сервере
-    var draw;
-    // 3D
-    var gl, mesh, lightingShader;
-    var angleX = 20, angleY = 20, depth = 10;
-
-
-
     //  Конвертация CSG фигуры в GL.Mesh объект.
     CSG.prototype.toMesh = function() {
         var mesh = new GL.Mesh({ normals: true, colors: true });
@@ -227,87 +210,138 @@
         mesh.computeWireframe();
         return mesh;
     };
+    CSG.prototype.setColor = function(arr) {
+        this.toPolygons().map(function(polygon) {
+            polygon.shared = arr;
+        });
+    };
+
+    // Зададим параметры
+    var colors = [['#fff', '#000']/*,['#2ecc71','#27ae60'],['#3498db','#2980b9'],['#9b59b6','#8e44ad'],['#34495e', '#2c3e50']*/];
+    var border_width = 2;
+    var axisPadding = 7;
+    var paddingBetweenAxis = 4;
+    var window_width = $('#drawing').width();
+
+    // Задаем переменные
+    // 2D
+    var elems = []; // Массив, в котором будет хранится вся инфа о имеющихся элементах на странице. Есть идея все это сеарилизировать на сервере
+    var draw;
+
+    // 3D
+    var gl, mesh, lightingShader, scene;
+    var angleX = 0, angleY = 0, depth = 15;
+    function getRandomColor3d(){
+        return [Math.random(), Math.random(), Math.random()];
+    }
+
+    function Scene(){
+        var pr = 100; // маштаб сцены
+        var self = this;
+        this.mesh = null;
+        this.solid = null;
+
+        this.addCube = function(values, total_width, direction){
+            var cube = CSG.cube({
+                center: [(total_width*2)/pr, 0, 0],
+                radius: [values.width/pr, values.height/pr, values.depth/pr]
+            });
+            cube.setColor(getRandomColor3d());
+            if(this.solid){
+                this.solid = this.solid.union(cube);
+            } else {
+                this.solid = cube;
+            }
+            renderMesh(this.solid);
+        }
+
+/*        this.substrCube = function(values, elem_id){
+
+            var cube = CSG.cube({
+                center: [, 0, 0],
+                radius: [values.width/pr, values.height/pr, values.depth/pr]
+            });
+        }*/
+        function addSphere(values, total_width, direction){
+            return 0;
+        }
+        function addCone(values, total_width, direction){
+            //Добавляем конус
+            return 0;
+        }
+
+        function renderMesh(mesh){
+            self.mesh = mesh.toMesh();
+            gl.ondraw();
+            return 0;
+        }
+    }
 
     // Инициализируем 2D SVG поле
-    function init2D() {
-        draw = SVG('drawing').size($('#drawing').width(), $('#drawing').width());
-    }
-
-
-    function init3D(){
-        // создаем объект
-        gl = GL.create();
-
-        // Зададим размеры
-        gl.canvas.height = window_width;
-        gl.canvas.width = window_width;
-
-        gl.viewport(0, 0, window_width, window_width); // точка обзора
-        gl.matrixMode(gl.PROJECTION);
-        gl.loadIdentity();
-        gl.perspective(45, 1, 0.1, 100);
-        gl.matrixMode(gl.MODELVIEW);
-
-        // Параметры сцены
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        gl.clearColor(0.93, 0.93, 0.93, 1);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.polygonOffset(1, 1);
-
-        // Shader with diffuse and specular lighting
-        lightingShader = new GL.Shader('\
-            varying vec3 color;\
-            varying vec3 normal;\
-            varying vec3 light;\
-            void main() {\
-              const vec3 lightDir = vec3(1.0, 2.0, 3.0) / 3.741657386773941;\
-              light = (gl_ModelViewMatrix * vec4(lightDir, 0.0)).xyz;\
-              color = gl_Color.rgb;\
-              normal = gl_NormalMatrix * gl_Normal;\
-              gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\
-            }\
-          ', '\
-            varying vec3 color;\
-            varying vec3 normal;\
-            varying vec3 light;\
-            void main() {\
-              vec3 n = normalize(normal);\
-              float diffuse = max(0.0, dot(light, n));\
-              float specular = pow(max(0.0, -reflect(light, n).z), 32.0) * sqrt(diffuse);\
-              gl_FragColor = vec4(mix(color * (0.3 + 0.7 * diffuse), vec3(1.0), specular), 1.0);\
-            }\
-         '
-        );
-        gl.onmousemove = function(e) {
-            if (e.dragging) {
-                angleY += e.deltaX * 2;
-                angleX += e.deltaY * 2;
-                angleX = Math.max(-90, Math.min(90, angleX));
-                render3D();
-            }
-        };
-        $('#modeling').html(gl.canvas);
-    }
-    function render3D(){
+    draw = SVG('drawing').size($('#drawing').width(), $('#drawing').width());
+    gl = GL.create();
+    gl.canvas.height = window_width;
+    gl.canvas.width = window_width;
+    gl.viewport(0, 0, window_width, window_width); // точка обзора
+    gl.matrixMode(gl.PROJECTION);
+    gl.loadIdentity();
+    gl.perspective(45, 1, 0.1, 100);
+    gl.matrixMode(gl.MODELVIEW);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(0.93, 0.93, 0.93, 1);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.polygonOffset(1, 1);
+    lightingShader = new GL.Shader('\
+        varying vec3 color;\
+        varying vec3 normal;\
+        varying vec3 light;\
+        void main() {\
+          const vec3 lightDir = vec3(1.0, 2.0, 3.0) / 3.741657386773941;\
+          light = (gl_ModelViewMatrix * vec4(lightDir, 0.0)).xyz;\
+          color = gl_Color.rgb;\
+          normal = gl_NormalMatrix * gl_Normal;\
+          gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\
+        }\
+      ', '\
+        varying vec3 color;\
+        varying vec3 normal;\
+        varying vec3 light;\
+        void main() {\
+          vec3 n = normalize(normal);\
+          float diffuse = max(0.0, dot(light, n));\
+          float specular = pow(max(0.0, -reflect(light, n).z), 32.0) * sqrt(diffuse);\
+          gl_FragColor = vec4(mix(color * (0.3 + 0.7 * diffuse), vec3(1.0), specular), 1.0);\
+        }\
+     '
+    );
+    gl.onmousemove = function(e) {
+        if (e.dragging) {
+            angleY += e.deltaX * 2;
+            angleX += e.deltaY * 2;
+            angleX = Math.max(-90, Math.min(90, angleX));
+            gl.ondraw();
+        }
+    };
+    $('#modeling').html(gl.canvas);
+    gl.ondraw = function() {
         gl.makeCurrent();
-
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.loadIdentity();
         gl.translate(0, 0, -depth);
         gl.rotate(angleX, 1, 0, 0);
         gl.rotate(angleY, 0, 1, 0);
-
-        if(mesh){
+        if(scene.mesh){
             gl.enable(gl.POLYGON_OFFSET_FILL);
-            lightingShader.draw(mesh, gl.TRIANGLES);
+            lightingShader.draw(scene.mesh, gl.TRIANGLES);
             gl.disable(gl.POLYGON_OFFSET_FILL);
         }
-
     }
 
-    init3D();
-    render3D();
+    scene = new Scene();
+    gl.ondraw();
+
+
 
     // Получаем рандомный цвет
     function getRandomColor(){
@@ -328,7 +362,6 @@
         });
         return obj;
     }
-
     // Получаем общую ширину всех элементов
     function getTotalWidth() {
         total_width = 0;
@@ -354,13 +387,15 @@
         $.each(elems, function(i, e){
             e.object2d.dx((parseInt(width))/2 * -1 * direction);
         });
+        gl.loadIdentity();
+        gl.translate(30,0,0)
     }
 
     // Добавляем куб
-    function addCube(values, total_width, direction){
-    	return 0;
-    }
 
+//    scene.addCube({width: 100, height:100, depth:100}, 0);
+//    scene.addCube({width: 100, height:100, depth:100}, 100);
+//    scene.addCube({width: 100, height:100, depth:100}, 300);
     // Добавляем квадрат
     function addRect(values, total_width, direction, withAxis) {
         var randColor = getRandomColor();
@@ -377,10 +412,6 @@
             );
         }
         return group;
-    }
-
-    function addSphere(values, total_width, direction){
-    	return 0;
     }
 
     function addCircle(values, total_width, direction){
@@ -428,14 +459,6 @@
                 .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'}))
         return group;
     }
-
-    // Добавляем цилиндр / конус
-    function addCone(values, total_width, direction){
-    	//Добавляем конус
-    	return 0;
-    }
-
-    init2D();
     
     $('.btn.accept').click(function(){
         getClosestModal(this).modal('hide'); // Закрываем модальное окно
@@ -450,7 +473,7 @@
             moveElems(values.width, direction); // Двигаем элементы в сторону
             switch(action){ // Тут понятно, выбираем действие/фигуру
                 case 'cubeModal': // Кубик
-                    object = [addRect(values, total_width, direction), addCube(values, total_width, direction)]; break;
+                    object = [addRect(values, total_width, direction), scene.addCube(values, total_width, direction)]; break;
                 case 'cylinderModal': // Цилиндр
                         values.radius2 = values.radius1;
                         values.height = values.radius2 * 2;
@@ -468,7 +491,7 @@
                 object3d: object[1], // Добавляем куб
                 values: values // запоминаем размеры, для оптимизации и быстродействия
             });
-            render();
+
             $('.arrows button').unbind(); // Убиваем событие на стрелочки
         });
         if(elems.length < 1){ // если создаем первый элемент,
