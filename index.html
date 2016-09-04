@@ -263,18 +263,22 @@
 
         addCone: function (values, direction) {
             this.moveObjects(values.width, direction); // Двигаем элементы в сторону
+
             // 2D
             var group = draw.group();
             group.add(draw.polygon(createPolyline(values)).colorIt());
 
             // Axis rendering
-            group.add(draw.line(-axisPadding, values.radius1, values.width + axisPadding, values.radius1).dashIt(values.width)); group.placeIt(this.totalWidth, direction, true);
+            group.add(draw.line(-axisPadding, values.radius1 > values.radius2 ? values.radius1 : values.radius2, values.width + axisPadding, values.radius1 > values.radius2 ? values.radius1 : values.radius2).dashIt(values.width));
+            group.placeIt(this.totalWidth, direction, true);
 
             // 3D
             var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius2, values.radius1, values.width, this.segments), new THREE.MeshPhongMaterial({
                 color: 0xF0F0F0,
                 shading: THREE.FlatShading
-            })); object.translateX(this.totalWidth / 2 * direction); object.rotation.z = -(90 * Math.PI / 180); scene.add(object);
+            }));
+            object.translateX(this.totalWidth / 2 * direction);
+            object.rotation.z = -(90 * Math.PI / 180); scene.add(object);
 
             this.addToArray(group, object, values, direction)
         },
@@ -417,11 +421,16 @@
     }
 
     function createPolyline(v) {
-        return [
+        return v.radius1 > v.radius2 ? [
             [0, 0],
             [v.width, v.radius1 - v.radius2],
             [v.width, v.radius1 + v.radius2],
             [0, v.radius1 * 2]
+        ] : [
+            [0, v.radius2 - v.radius1],
+            [v.width, 0],
+            [v.width, v.radius2 * 2],
+            [0, v.radius2 + v.radius1]
         ];
     }
 
