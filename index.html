@@ -11,6 +11,7 @@
     <script src="js/svg.min.js"></script>
     <script src="js/three.min.js"></script>
     <script src="js/three/controls/TrackballControls.js"></script>
+    <script src="js/ThreeCSG.js"></script>
 </head>
 <body>
 <!-- Modal -->
@@ -22,35 +23,29 @@
                 <h4 class="modal-title">Создать паралепипед</h4>
             </div>
             <div class="modal-body">
-                <div class="col-md-3"></div>
-                <div class="col-md-9">
-                    <div class="row">
-                        <div class="form-horizontal">
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Ширина</label>
-                                <div class="col-sm-10">
-                                    <input placeholder="0" class="form-control width" name="width">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Высота</label>
-                                <div class="col-sm-10">
-                                    <input placeholder="0" class="form-control height" name="height">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Глубина</label>
-                                <div class="col-sm-10">
-                                    <input placeholder="0" class="form-control depth" name="depth">
-                                </div>
-                            </div>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Ширина</label>
+                        <div class="col-sm-10">
+                            <input placeholder="0" class="form-control width" name="width">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Высота</label>
+                        <div class="col-sm-10">
+                            <input placeholder="0" class="form-control height" name="height">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Глубина</label>
+                        <div class="col-sm-10">
+                            <input placeholder="0" class="form-control depth" name="depth">
                         </div>
                     </div>
                 </div>
                 <div class="clearfix"></div>
             </div>
             <div class="modal-footer">
-                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
                 <button type="button" class="btn btn-primary accept">Создать</button>
             </div>
         </div>
@@ -64,29 +59,23 @@
                 <h4 class="modal-title">Создать цилиндр</h4>
             </div>
             <div class="modal-body">
-                <div class="col-md-3"></div>
-                <div class="col-md-9">
-                    <div class="row">
-                        <div class="form-horizontal">
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Высота</label>
-                                <div class="col-sm-10">
-                                    <input placeholder="0" class="form-control width" name="width">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label">Радиус</label>
-                                <div class="col-sm-10">
-                                    <input placeholder="0" class="form-control radius" name="radius1">
-                                </div>
-                            </div>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Высота</label>
+                        <div class="col-sm-10">
+                            <input placeholder="0" class="form-control width" name="width">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Радиус</label>
+                        <div class="col-sm-10">
+                            <input placeholder="0" class="form-control radius" name="radius1">
                         </div>
                     </div>
                 </div>
                 <div class="clearfix"></div>
             </div>
             <div class="modal-footer">
-                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
                 <button type="button" class="btn btn-primary accept">Создать</button>
             </div>
         </div>
@@ -122,7 +111,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
                 <button type="button" class="btn btn-primary accept">Создать</button>
             </div>
         </div>
@@ -133,7 +121,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">Создать паралепипед</h4>
+                <h4 class="modal-title">Создать сферу</h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
@@ -146,27 +134,19 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <!--<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>-->
                 <button type="button" class="btn btn-primary accept">Создать</button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
-<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
-<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
-<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
-
 <nav class="navbar navbar-default">
     <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <a class="navbar-brand" href="#">ИГЭУ САПР</a>
         </div>
         <p class="navbar-text navbar-right">© Игорь Майоров</p>
-    </div><!-- /.container-fluid -->
+    </div>
 </nav>
 <div class="container">
     <div class="row">
@@ -190,87 +170,234 @@
 
 </div>
 <script>
-    var container, stats;
-    var camera, controls, scene, renderer;
+    var camera,
+        controls,
+        scene,
+        renderer,
+        raycaster,
+        mouse,
+        draw,
+        colors = ['#fff', '#000'], // Зададим параметры
+        borderWidth = 2,
+        axisPadding = 7,
+        windowWidth = $('#drawing').width(),
+        selected = false;
 
-    // Зададим параметры
-    var colors = [['#fff', '#000']/*,['#2ecc71','#27ae60'],['#3498db','#2980b9'],['#9b59b6','#8e44ad'],['#34495e', '#2c3e50']*/];
-    var border_width = 2;
-    var axisPadding = 7;
-    var paddingBetweenAxis = 4;
-    var window_width = $('#drawing').width();
+    var objects = { // Массив, в котором будет хранится вся инфа о имеющихся элементах на странице. Есть идея все это сеарилизировать на сервере
+        d2: [],
+        d3: [],
+        values: [],
+        totalWidth: 0,
+        segments: 256,
+        addCube: function (values, direction) {
+            this.moveObjects(values.width, direction); // Двигаем элементы в сторону
 
-    // Задаем переменные
-    var elems = []; // Массив, в котором будет хранится вся инфа о имеющихся элементах на странице. Есть идея все это сеарилизировать на сервере
-    var draw;
+            // 2D
+            var group = draw.group();
+            group.add(draw.rect(values.width, values.height).fill({
+                color: colors[1]
+            }));
+            group.add(draw.rect(values.width - borderWidth * 2, values.height - borderWidth * 2).colorIt().move(borderWidth, borderWidth));
+            group.placeIt(this.totalWidth, direction);
 
+            // 3D
+            var object = new THREE.Mesh(new THREE.BoxGeometry(values.height, values.width, values.depth), new THREE.MeshPhongMaterial({
+                color: 0xF0F0F0,
+                shading: THREE.FlatShading
+            }));
+            object.translateX(this.totalWidth / 2 * direction);
+            object.rotation.z = -(90 * Math.PI / 180);
+            scene.add(object);
+            this.addToArray(group, object, values, direction);
+        },
+
+        addSphere: function (values, direction) {
+            values.height = values.radius * 2;
+            values.width = values.radius * 2;
+            this.moveObjects(values.width, direction); // Двигаем элементы в сторону
+
+            // 2D
+            var group = draw.group();
+            group.add(draw.circle(values.radius * 2).fill({
+                color: colors[1]
+            }));
+            group.add(draw.circle(values.radius * 2 - borderWidth * 2).colorIt().move(borderWidth, borderWidth));
+
+            //Axis rendering
+            group.add(draw.line(values.width / 2, -axisPadding, values.width / 2, values.width + axisPadding).dashIt(values.width));
+            group.add(draw.line(-axisPadding, values.width / 2, values.width + axisPadding, values.width / 2).dashIt(values.width));
+            group.placeIt(this.totalWidth, direction, true, true);
+
+            // 3D
+            var object = new THREE.Mesh(new THREE.SphereGeometry(values.radius, this.segments, this.segments), new THREE.MeshPhongMaterial({
+                color: 0xF0F0F0,
+                shading: THREE.FlatShading
+            }));
+            object.translateX(this.totalWidth / 2 * direction);
+            object.rotation.z = -(90 * Math.PI / 180);
+            scene.add(object);
+
+            this.addToArray(group, object, values);
+        },
+
+        addCylinder: function (values, direction) {
+            values.radius2 = values.radius1;
+            values.height = values.radius2 * 2;
+            this.moveObjects(values.width, direction); // Двигаем элементы в сторону
+
+            // 2D
+            var group = draw.group();
+            group.add(draw.rect(values.width, values.height).fill({
+                color: colors[1]
+            }));
+            group.add(draw.rect(values.width - borderWidth * 2, values.height - borderWidth * 2).colorIt().move(borderWidth, borderWidth));
+
+            //Axis rendering
+            group.add(draw.line(-axisPadding, values.height / 2, values.width + axisPadding, values.height / 2).dashIt(values.width));
+            group.placeIt(this.totalWidth, direction, true);
+
+            // 3D
+            var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius1, values.radius2, values.width, this.segments), new THREE.MeshPhongMaterial({
+                color: 0xF0F0F0,
+                shading: THREE.FlatShading
+            }));
+            object.translateX(this.totalWidth / 2 * direction);
+            object.rotation.z = -(90 * Math.PI / 180);
+            scene.add(object);
+
+            this.addToArray(group, object, values, direction);
+        },
+
+        addCone: function (values, direction) {
+            this.moveObjects(values.width, direction); // Двигаем элементы в сторону
+            // 2D
+            var group = draw.group();
+            group.add(draw.polygon(createPolyline(values, 0)).fill({
+                color: colors[1]
+            }));
+            group.add(draw.polygon(createPolyline(values, borderWidth)).colorIt()).move(borderWidth, borderWidth);
+
+            // Axis rendering
+            group.add(draw.line(-axisPadding, values.radius1, values.width + axisPadding, values.radius1).dashIt(values.width));
+            group.placeIt(this.totalWidth, direction, true);
+
+            // 3D
+            var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius2, values.radius1, values.width, this.segments), new THREE.MeshPhongMaterial({
+                color: 0xF0F0F0,
+                shading: THREE.FlatShading
+            }));
+            object.translateX(this.totalWidth / 2 * direction);
+            object.rotation.z = -(90 * Math.PI / 180);
+            scene.add(object);
+
+            this.addToArray(group, object, values, direction)
+        },
+
+        addToArray: function (d2, d3, values, direction) {
+            if (direction >= 0) {
+                this.d2.push(d2);
+                this.d3.push(d3);
+                this.values.push(values);
+            } else {
+                this.d2.unshift(d2);
+                this.d3.unshift(d3);
+                this.values.unshift(values);
+            }
+            this.updateTotalWidth(values.width);
+            render();
+        },
+        updateTotalWidth: function (inc) {
+            this.totalWidth += inc;
+        },
+        moveObjects: function (width, direction) {
+            $.each(this.d2, function (i, e) {
+                e.dx((parseInt(width)) / 2 * -1 * direction)
+            });
+            $.each(this.d3, function (i, e) {
+                e.translateY(parseInt(width) / 2 * -1 * direction)
+            });
+        }
+    }
+
+    SVG.extend(SVG.Element, {
+        colorIt: function () {
+            return this.fill(colors[0]);
+        },
+        dashIt: function (width) {
+            return this.stroke({
+                width: borderWidth / 2,
+                color: '#e67e22',
+                dasharray: getDashLength(width - borderWidth / 2) + ', 2, 2, 2'
+            });
+        },
+        placeIt: function (total_width, direction, withAxisX, withAxisY) {
+            withAxisX == null ? withAxisX = false : true;
+            withAxisY == null ? withAxisY = false : true;
+            this.cx(windowWidth / 2 + withAxisX * axisPadding).cy(windowWidth / 2 + withAxisY * axisPadding);
+            this.dx(total_width * direction / 2);
+            withAxisX || withAxisY ? this.front() : this.back();
+            return this;
+        }
+    });
 
     // Инициализация 3D сцены технологией THREE.js
     // Выглядит оч круто
+
     function init3D() {
         // Camera, задаем параметры камеры сцены
-        camera = new THREE.PerspectiveCamera( 60, 1, 1, 1000 );
-        camera.position.z = 500;
-        camera.rotation.x = 10;//90 * Math.PI / 180;
-        //camera.lookAt(new THREE.Vector3 (10, 10, 10));
-        //alert(camera.rotation.x);
+        camera = new THREE.PerspectiveCamera(60, 1, 1, 1000);
+        camera.position.set(10, 0, 500);
+
+        scene = new THREE.Scene();
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+
         // Control, сообщаем программе как будем крутить сцену, кстати, пришлось заюзать сторонюю библиотек, вырванную из примеров THREE.js
-        controls = new THREE.TrackballControls( camera, document.getElementById('modeling'));
-        controls.rotateSpeed = 1.0;
-        controls.zoomSpeed = 1.2;
+        controls = new THREE.TrackballControls(camera, document.getElementById('modeling'));
         controls.panSpeed = 0.8;
-        controls.noZoom = false;
-        controls.noPan = false;
-        controls.staticMoving = true;
-        controls.dynamicDampingFactor = 0.3;
-        controls.keys = [ 65, 83, 68 ];
-        controls.addEventListener( 'change', render );
+        controls.addEventListener('change', render);
 
         // Lights, освещение сцены, их 3, но на самом деле 2, один на всякий случай, пусть будет
         var lights = [];
-        lights[0] = new THREE.PointLight( 0xffffff, 1, 0 );
-        lights[1] = new THREE.PointLight( 0xffffff, 1, 0 );
-        lights[2] = new THREE.PointLight( 0xffffff, 1, 0 );
-        lights[0].position.set( 0, 200, 0 );
-        lights[1].position.set( 100, 200, 100 );
-        lights[2].position.set( -100, -200, -100 );
-
-        // World, соединяем все параметры мира указанные выше в одну сцену
-        scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
-        //scene.add( lights[0] );
-        scene.add( lights[1] );
-        scene.add( lights[2] );
+        lights[0] = new THREE.DirectionalLight(0xffffff, 0.99);
+        lights[1] = new THREE.DirectionalLight(0xffffff, 0.99);
+        lights[0].position.set(300, 200, 150);
+        lights[1].position.set(-300, -200, -150);
+        scene.add(lights[0]);
+        scene.add(lights[1]);
 
         // renderer, рендерер для браузера, сообщаем какой технологией рендерить сцену, в нашем случае - WebGL, будет работать даже на мобилках
-        renderer = new THREE.WebGLRenderer( { antialias: false } );
-        renderer.setClearColor( 0xffffff );
-        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0xffffff);
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize($('#modeling').width(), $('#modeling').width());
-
-        document.getElementById('modeling').appendChild( renderer.domElement );
-        window.addEventListener( 'resize', onWindowResize, false );
+        $('#modeling').append(renderer.domElement);
+        $(window).on('resize', function () {
+            onWindowResize();
+        });
         render();
     }
 
     // Функция из документации, шоб ресайзило сцену при ресайзе окна, но почему то все равно не работает
     function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        console.log('resize');
+        camera.aspect = 1;
         camera.updateProjectionMatrix();
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize($('#modeling').width(), $('#modeling').width());
         controls.handleResize();
         render();
     }
 
     // Какая то хрень данная в документации, надо использовать шоб работало
     function animate() {
-        requestAnimationFrame( animate );
+        requestAnimationFrame(animate);
         controls.update();
     }
 
     // Обновляем 3D сцену
     function render() {
-        renderer.render( scene, camera );
+        renderer.render(scene, camera);
     }
 
     // Инициализируем 2D SVG поле
@@ -278,194 +405,99 @@
         draw = SVG('drawing').size($('#drawing').width(), $('#drawing').width());
     }
 
-    // Получаем рандомный цвет
-    function getRandomColor(){
-        return colors[Math.floor(Math.random() * (colors.length))];
-    }
-
     // Находим использованное модальное окно на основе closest
-    function getClosestModal(e){
+    function getClosestModal(e) {
         return $(e).closest('.modal');
     }
 
     // Получаем значения из модального окна в объекте
-    function getValuesFromModal(e){
+    function getValuesFromModal(e) {
         var obj = new Object();
-        getClosestModal(e).find('input').each(function(){
+        getClosestModal(e).find('input').each(function () {
             obj[$(this).attr('name')] = parseInt($(this).val());
-            $(this).val('');
+            //$(this).val('');
         });
         return obj;
     }
 
-    // Получаем общую ширину всех элементов
-    function getTotalWidth() {
-        total_width = 0;
-        $.each(elems, function(i, e){
-            total_width += e.values.width;
-        });
-        return total_width;
-    }
-
-    function getDashLength(width){ //  Подбор длины штриха осевой под коффициент 6 - типо крутая САПР, как компасс
+    function getDashLength(width) { //  Подбор длины штриха осевой под коффициент 6 - типо крутая САПР, как компасс
         var i = 1;
         var length = false;
-        while(length > 16 || !length){
+        while (length > 16 || !length) {
             i++;
-            length = ((width + 4 + axisPadding*2)/i - 4);
-            console.log(length + ' | ' + i);
+            length = ((width + 4 + axisPadding * 2) / i - 4);
         }
         return length;
     }
 
-    // Двигаем элементы
-    function moveElems(width, direction){
-        $.each(elems, function(i, e){
-            e.object2d.dx((parseInt(width))/2 * -1 * direction);
-            e.object3d.translateY(parseInt(width)/2 * -1 * direction)
-        });
-    }
-
-    // Добавляем куб
-    function addCube(values, total_width, direction){
-        var geometry = new THREE.BoxGeometry(values.height, values.width, values.depth);
-        var material = new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
-        var object = new THREE.Mesh( geometry, material );
-        object.translateX(total_width/2 * direction);
-        object.rotation.z = -(90 * Math.PI / 180);
-        scene.add( object );
-        return object;
-    }
-
-    // Добавляем квадрат
-    function addRect(values, total_width, direction, withAxis) {
-        var randColor = getRandomColor();
-        var group = draw.group()
-        group.add(draw.rect(values.width - border_width/2, values.height - border_width/2)
-                .fill(randColor[0])
-                .stroke({linecap: 'square', color: randColor[1], width: border_width})
-                .x((total_width * direction + (elems.length > 0 ? border_width * -1 * direction : 0) + window_width - values.width )/2)
-                .y((window_width - values.height + border_width)/2));
-        if(withAxis){
-            group.add(
-                    draw.line((total_width + window_width - values.width )/2 - axisPadding, window_width/2, (total_width + window_width - values.width )/2 + values.width + axisPadding, window_width/2)
-                            .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'})
-            );
-        }
-        return group;
-    }
-
-    function addSphere(values, total_width, direction){
-
-        var geometry = new THREE.SphereGeometry( parseInt(values.radius), 64, 64 );
-        var material = new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
-        var object = new THREE.Mesh( geometry, material );
-        object.translateX((total_width)/2 * direction);
-        object.rotation.z = -(90 * Math.PI / 180);
-        scene.add( object );
-        render();
-        return object;
-    }
-
-    function addCircle(values, total_width, direction){
-        var randColor = getRandomColor();
-        var group = draw.group()
-        group.add(draw.circle(values.radius*2)
-                .x((total_width * direction + window_width - (values.radius*2 - (elems.length > 0 ? 0 : border_width * -1 * direction)))/2)
-                .y((window_width - (values.radius*2 - border_width))/2)
-                .fill(randColor[0])
-                .stroke({linecap: 'square', color: randColor[1], width: border_width}));
-        group.add(
-                draw.line(
-                        window_width/2,
-                        (total_width + window_width - values.width )/2 - axisPadding,
-                        window_width/2,
-                        (total_width + window_width - values.width )/2 + values.width + axisPadding
-
-                )
-                        .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'})
-        );
-        group.add(
-                draw.line((total_width + window_width - values.width )/2 - axisPadding, window_width/2, (total_width + window_width - values.width )/2 + values.width + axisPadding, window_width/2)
-                        .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'})
-        );
-        return group;
-    }
-
-    // Добавляем полигон / трапецию
-    function addPolygone(values, total_width, direction){
-        var randColor = getRandomColor();
-        var coord = [];
-        var group = draw.group()
-        if(values.radius2 != 0){
-            coord.push([(total_width * direction + window_width - (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width + (values.radius2*2 - (values.radius1 == 0 ? border_width : 0)))/2]);
-        }
-        coord.push([(total_width * direction + window_width - (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width - (values.radius2*2 - (values.radius1 == 0 ? border_width*2 : 0)/* */))/2]);
-        coord.push([(total_width * direction + window_width + (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width - (values.radius1*2 - (values.radius2 == 0 ? border_width : 0) /* + border_width*2*/))/2]);
-
-        if(values.radius1 != 0){
-            coord.push([(total_width * direction + window_width + (values.width - (elems.length > 0 ? 0 : border_width * direction)))/2, (window_width + (values.radius1*2 - (values.radius2 == 0 ? border_width : 0)))/2]);
-        }
-        group.add(draw.polygon(coord).fill(randColor[0])
-                .stroke({linecap: 'square', color: randColor[1], width: border_width}));
-        group.add(draw.line((total_width * direction + window_width - values.width)/2 - axisPadding, window_width/2, (total_width * direction + window_width - values.width)/2 + values.width + axisPadding, window_width/2)
-                .stroke({width: border_width/2, color: '#e67e22', dasharray: getDashLength(values.width - border_width/2) + ', 4'}))
-        return group;
-    }
-
-    // Добавляем цилиндр / конус
-    function addCone(values, total_width, direction){
-        var geometry = new THREE.CylinderGeometry(values.radius1, values.radius2, values.width, 64);
-        var material = new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
-        var object = new THREE.Mesh( geometry, material );
-        object.translateX(total_width/2 * direction);
-        object.rotation.z = -(90 * Math.PI / 180);
-        scene.add( object );
-        return object;
+    function createPolyline(v, bW) {
+        return [
+            [bW, bW],
+            [v.width - bW, v.radius1 - v.radius2 + bW],
+            [v.width - bW, v.radius1 + v.radius2 - bW],
+            [bW, v.radius1 * 2 - bW]
+        ];
     }
 
     init2D();
     init3D();
     animate();
-    //addCone({height:100, radius1: 0, radius2:100}, 0, 1);
-    render();
-    $('.btn.accept').click(function(){
+
+    $('.btn.accept').click(function () {
         getClosestModal(this).modal('hide'); // Закрываем модальное окно
         var values = getValuesFromModal(this); // Получаем данные из модального окна
         var action = getClosestModal(this).attr('id'); // Получаем че это вообще за модальное окно было
-        var object;
         $('.arrows').show(); // Показываем стрелочки
-        $('.arrows button').click(function(){ // вешаем событие на клик по стрелочке
+        $('.arrows button').click(function () { // вешаем событие на клик по стрелочке
             $('.arrows').hide(); // Скрываем стрелочки
             var direction = $(this).attr('direction') == 'right' ? 1 : -1; // Вычисляем направление
-            total_width = getTotalWidth(); // Получаем общую ширину
-            moveElems(values.width, direction); // Двигаем элементы в сторону
-            switch(action){ // Тут понятно, выбираем действие/фигуру
+            switch (action) { // Тут понятно, выбираем действие/фигуру
                 case 'cubeModal': // Кубик
-                    object = [addRect(values, total_width, direction), addCube(values, total_width, direction)]; break;
+                    objects.addCube(values, direction);
+                    break;
                 case 'cylinderModal': // Цилиндр
-                    values.radius2 = values.radius1;
-                    values.height = values.radius2 * 2;
-                    object = [addRect(values, total_width, direction, true), addCone(values, total_width, direction)]; break;
+                    objects.addCylinder(values, direction);
+                    break;
                 case 'coneModal':
-                    object = [addPolygone(values, total_width, direction), addCone(values, total_width, direction)]; break;
+                    objects.addCone(values, direction);
+                    break;
                 case 'sphereModal':
-                    values.width = values.radius * 2;
-                    object = [addCircle(values, total_width, direction), addSphere(values, total_width, direction)]; break;
+                    objects.addSphere(values, direction);
+                    break;
                 default:
                     false;
             }
-            elems.push({
-                object2d: object[0], // Добавляем квадрат
-                object3d: object[1], // Добавляем куб
-                values: values // запоминаем размеры, для оптимизации и быстродействия
-            });
-            render();
             $('.arrows button').unbind(); // Убиваем событие на стрелочки
         });
-        if(elems.length < 1){ // если создаем первый элемент,
+        if (objects.d2.length < 1) { // если создаем первый элемент,
             $('.arrows button:first-child').click(); // то кликаем на первую попавшуюся стрелочку программой,
         } // нахрена ее тыкать человеку
+    });
+
+    // Это блок, стреляющий из камеры лучом по фигуре
+    $('canvas').click(function (event) {
+
+        event.preventDefault();
+
+        var offset = $('canvas').parent().offset();
+
+        mouse.x = ((event.clientX - offset.left) / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = -((event.clientY - offset.top) / renderer.domElement.clientHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        var intersects = raycaster.intersectObjects(objects.d3);
+        if (intersects.length > 0) {
+            if (selected) {
+                selected.material.color.setHex(0xffffff);
+                selected = false;
+            } else {
+                selected = intersects[0].object;
+                selected.material.color.setHex(0x3c9eff);
+            }
+        }
+
+        render();
     });
 
 
