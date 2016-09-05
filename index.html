@@ -13,11 +13,16 @@
     <script src="js/three.min.js"></script>
     <script src="js/three/controls/TrackballControls.js"></script>
     <script src="js/ThreeCSG.js"></script>
+    <style>
+        .buttons button {
+            width:65px;
+            height: 65px;
+        }
+    </style>
 </head>
-
 <body>
 <!-- Modal -->
-<div class="modal fade" id="cubeModal">
+<div class="modal fade shape" id="cubeModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -53,7 +58,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="cylinderModal">
+<div class="modal fade shape" id="cylinderModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -83,7 +88,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="coneModal">
+<div class="modal fade shape" id="coneModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -118,7 +123,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="sphereModal">
+<div class="modal fade shape" id="sphereModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -141,6 +146,28 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="delete">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Удалить объект</h4>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить эту деталь?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Нет</button>
+                <button type="button" class="btn btn-danger accept">Да</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
+<!-- PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START PAGE START -->
 
 <nav class="navbar navbar-default">
     <div class="container">
@@ -151,14 +178,22 @@
     </div>
 </nav>
 <div class="container">
-    <div class="row">
-        <button data-toggle="modal" data-target="#cubeModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-rectangular"></i></button>
-        <button data-toggle="modal" data-target="#cylinderModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-cylinder"></i></button>
-        <button data-toggle="modal" data-target="#coneModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-cone"></i></button>
-        <button data-toggle="modal" data-target="#sphereModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-sphere"></i></button>
+    <div class="row buttons">
+        <div class="shapes text-left" style="display: inline-block">
+            <button data-toggle="modal" data-target="#cubeModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-rectangular"></i></button>
+            <button data-toggle="modal" data-target="#cylinderModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-cylinder"></i></button>
+            <button data-toggle="modal" data-target="#coneModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-cone"></i></button>
+            <button data-toggle="modal" data-target="#sphereModal" class="btn btn-default btn-lg" type="submit"><i class="flaticon-sphere"></i></button>
+        </div>
         <div class="arrows" style="display: none">
             <button direction="left" class="btn btn-info btn-lg"><i class="glyphicon glyphicon-arrow-left"></i></button>
             <button direction="right" class="btn btn-info btn-lg"><i class="glyphicon glyphicon-arrow-right"></i></button>
+        </div>
+        <div class="subMenu" style="float: right; display: none">
+            <button data-toggle="modal" data-target="#cubeModal" class="btn btn-warning btn-lg" type="submit"><i class="flaticon-rectangular"></i></button>
+            <button data-toggle="modal" data-target="#cylinderModal" class="btn btn-warning btn-lg" type="submit"><i class="flaticon-cylinder"></i></button>
+            <button data-toggle="modal" data-target="#coneModal" class="btn btn-warning btn-lg" type="submit"><i class="flaticon-cone"></i></button>
+            <button data-toggle="modal" data-target="#delete" class="btn btn-danger btn-lg" type="submit"><i class="glyphicon glyphicon-trash"></i></button>
         </div>
     </div>
     <div class="row">
@@ -182,8 +217,7 @@
         colors = ['#fff', '#000'], // Зададим параметры
         borderWidth = 2,
         axisPadding = 7,
-        windowWidth = $('#drawing').width(),
-        selected = false;
+        windowWidth = $('#drawing').width();
 
     var objects = { // Массив, в котором будет хранится вся инфа о имеющихся элементах на странице. Есть идея все это сеарилизировать на сервере
         d2: [],
@@ -233,7 +267,7 @@
             object.rotation.z = -(90 * Math.PI / 180);
             scene.add(object);
 
-            this.addToArray(group, object, values);
+            this.addToArray(group, object, values, direction);
         },
 
         addCylinder: function (values, direction) {
@@ -306,9 +340,66 @@
             $.each(this.d3, function (i, e) {
                 e.translateY(parseInt(width) / 2 * -1 * direction)
             });
+        },
+        delete: function (selected) {
+            selected.d2.remove();
+            scene.remove(selected.d3);
+            this.updateTotalWidth(-selected.values.width);
+            this.d2.splice(selected.n, 1);
+            this.d3.splice(selected.n, 1);
+            this.values.splice(selected.n, 1);
+            $.each(this.d2, function (i, e) {
+                e.dx(parseInt(selected.values.width) / 2 * (i < selected.n ? 1 : -1));
+            });
+            $.each(this.d3, function (i, e) {
+                e.translateY(parseInt(selected.values.width) / 2 * (i < selected.n ? 1 : -1));
+            });
         }
     }
 
+    var objectPicker = {
+        selected: false,
+        selectedObjN: null,
+        find: function (object) {
+            if(object instanceof THREE.Mesh) {
+                var N;
+                $.each(objects.d3, function (i, e) {
+                    if(e == object){
+                        N = i; return false;
+                    }
+                });
+            } else {
+                $.each(objects.d2, function (i, e) {
+                    if(e.node == object) {
+                        N = i; return false;
+                    }
+                });
+            }
+            this.selectedObjN = N;
+            return this;
+        },
+        select: function () {
+            toggleSubmenu();
+            this.selected = {
+                d2: objects.d2[this.selectedObjN],
+                d3: objects.d3[this.selectedObjN],
+                values: objects.values[this.selectedObjN],
+                n: this.selectedObjN
+            };
+            this.selected.d2.first().stroke({ color: '#3c9eff'});
+            this.selected.d3.material.color.setHex(0x3c9eff);
+            return this;
+        },
+        unselect: function () {
+            toggleSubmenu();
+            this.selected.d3.material.color.setHex(0xF0F0F0);
+            this.selected.d2.first().stroke({ color: colors[1]});
+            this.selected = false;
+            this.selectedObjN = false;
+            return this;
+        }
+
+    }
     SVG.extend(SVG.Element, {
         colorIt: function () {
             return this.fill(colors[0]).stroke({ width: borderWidth, color: colors[1] });
@@ -403,7 +494,7 @@
     // Получаем значения из модального окна в объекте
     function getValuesFromModal(e) {
         var obj = new Object();
-        getClosestModal(e).find('input').each(function () {
+        e.find('input').each(function () {
             obj[$(this).attr('name')] = parseInt($(this).val());
             //$(this).val('');
         });
@@ -434,39 +525,58 @@
         ];
     }
 
+    function toggleSubmenu(){
+        $('.subMenu').fadeToggle(100);
+    }
+
+    function doAction(action, values, direction) {
+        switch (action) { // Тут понятно, выбираем действие/фигуру
+            case 'cubeModal':
+                objects.addCube(values, direction);
+                break;
+            case 'cylinderModal':
+                objects.addCylinder(values, direction);
+                break;
+            case 'coneModal':
+                objects.addCone(values, direction);
+                break;
+            case 'sphereModal':
+                objects.addSphere(values, direction);
+                break;
+            case 'delete':
+                objects.delete(objectPicker.selected); objectPicker.unselect();
+                break;
+            default:
+                false;
+        }
+        render();
+    }
+
     init2D();
     init3D();
     animate();
 
     $('.btn.accept').click(function () {
-        getClosestModal(this).modal('hide'); // Закрываем модальное окно
-        var values = getValuesFromModal(this); // Получаем данные из модального окна
-        var action = getClosestModal(this).attr('id'); // Получаем че это вообще за модальное окно было
-        $('.arrows').show(); // Показываем стрелочки
-        $('.arrows button').click(function () { // вешаем событие на клик по стрелочке
-            $('.arrows').hide(); // Скрываем стрелочки
-            var direction = $(this).attr('direction') == 'right' ? 1 : -1; // Вычисляем направление
-            switch (action) { // Тут понятно, выбираем действие/фигуру
-                case 'cubeModal': // Кубик
-                    objects.addCube(values, direction);
-                    break;
-                case 'cylinderModal': // Цилиндр
-                    objects.addCylinder(values, direction);
-                    break;
-                case 'coneModal':
-                    objects.addCone(values, direction);
-                    break;
-                case 'sphereModal':
-                    objects.addSphere(values, direction);
-                    break;
-                default:
-                    false;
-            }
-            $('.arrows button').unbind(); // Убиваем событие на стрелочки
-        });
-        if (objects.d2.length < 1) { // если создаем первый элемент,
-            $('.arrows button:first-child').click(); // то кликаем на первую попавшуюся стрелочку программой,
-        } // нахрена ее тыкать человеку
+        var modal = getClosestModal(this).modal('hide'), // Закрываем модальное окно
+            action = modal.attr('id'), // Получаем че это вообще за модальное окно было
+            values = getValuesFromModal(modal); // Получаем данные из модального окна
+        if(modal.hasClass('shape')){
+
+            $('.arrows button').click(function () { // вешаем событие на клик по стрелочке
+                var direction = $(this).attr('direction') == 'right' ? 1 : -1; // Вычисляем направление
+                doAction(action, values, direction);
+                $('.arrows').hide(); // Скрываем стрелочки
+                $('.arrows button').unbind(); // Убиваем событие на стрелочки
+            });
+            if (objects.d2.length < 1) { // если создаем первый элемент,
+                $('.arrows button:last-child').click(); // то кликаем на первую попавшуюся стрелочку программой,
+            } else {
+                $('.arrows').show(); // Показываем стрелочки
+            } // нахрена ее тыкать человеку
+
+        } else {
+            doAction(action, values);
+        }
     });
 
     // Это блок, стреляющий из камеры лучом по фигуре
@@ -475,23 +585,27 @@
         event.preventDefault();
 
         var offset = $('canvas').parent().offset();
-
         mouse.x = ((event.clientX - offset.left) / renderer.domElement.clientWidth) * 2 - 1;
         mouse.y = -((event.clientY - offset.top) / renderer.domElement.clientHeight) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
 
         var intersects = raycaster.intersectObjects(objects.d3);
-        if (intersects.length > 0) {
-            if (selected) {
-                selected.material.color.setHex(0xffffff);
-                selected = false;
-            } else {
-                selected = intersects[0].object;
-                selected.material.color.setHex(0x3c9eff);
-            }
+        if (intersects.length > 0){
+            if (objectPicker.selected)
+                objectPicker.unselect();
+            else
+                objectPicker.find(intersects[0].object).select();
         }
+        render();
+    });
 
+    $(document).on('click', 'svg > g', function () {
+        if (objectPicker.selected){
+            objectPicker.unselect();
+        } else {
+            objectPicker.find(this).select();
+        }
         render();
     });
 </script>
