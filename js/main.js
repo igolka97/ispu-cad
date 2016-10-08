@@ -21,18 +21,13 @@ var objects = { // Массив, в котором будет хранится �
     values: [],
     totalWidth: 0,
     segments: 256,
-    limit: {
-        left: {
-            /*radius: false,
-            width: false*/
-        },
-        right: {
-            /*radius: false,
-            width: false*/
-        },
-    },
+
     direction: 0,
     addCube: function (values) {
+        var dp = values.depth;
+        values.depth = values.width;
+        values.width = dp;
+
         this.moveObjects(values.width, this.direction); // Двигаем элементы в сторону
 
         // 2D
@@ -49,8 +44,54 @@ var objects = { // Массив, в котором будет хранится �
         object.rotation.z = -(90 * Math.PI / 180);
         scene.add(object);
         this.addToArray(group, object, values);
-        this.addLimit('radius', values.width);
+        limiter.addLimit('radius', getR(values.depth < values.height ? values.height : values.depth));
         return this;
+    },
+
+    addCylinder: function (values) {
+        values.height = values.radius * 2;
+        this.moveObjects(values.width, this.direction); // Двигаем элементы в сторону
+
+        // 2D
+        var group = draw.group();
+        group.add(draw.rect(values.width, values.height).colorIt());
+
+        //Axis rendering
+        group.add(draw.line(-axisPadding, values.height / 2, values.width + axisPadding, values.height / 2).dashIt(values.width));
+        group.placeIt(this.totalWidth, this.direction, true);
+
+        // 3D
+        var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius, values.radius, values.width, this.segments), new THREE.MeshPhongMaterial({
+            color: 0xF0F0F0,
+            shading: THREE.FlatShading
+        }));
+        object.translateX(this.totalWidth / 2 * this.direction);
+        object.rotation.z = -(90 * Math.PI / 180);
+        scene.add(object);
+        this.addToArray(group, object, values);
+        limiter.addLimit('width', values.radius*2);
+    },
+
+    addCone: function (values) {
+        this.moveObjects(values.width, this.direction); // Двигаем элементы в сторону
+
+        // 2D
+        var group = draw.group();
+        group.add(draw.polygon(createPolyline(values)).colorIt());
+
+        // Axis rendering
+        group.add(draw.line(-axisPadding, values.radius1 > values.radius2 ? values.radius1 : values.radius2, values.width + axisPadding, values.radius1 > values.radius2 ? values.radius1 : values.radius2).dashIt(values.width));
+        group.placeIt(this.totalWidth, this.direction, true);
+
+        // 3D
+        var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius2, values.radius1, values.width, this.segments), new THREE.MeshPhongMaterial({
+            color: 0xF0F0F0,
+            shading: THREE.FlatShading
+        }));
+        object.translateX(this.totalWidth / 2 * this.direction);
+        object.rotation.z = -(90 * Math.PI / 180); scene.add(object);
+        this.addToArray(group, object, values);
+        limiter.addLimit('width', (this.direction > 0 ? values.radius2 : values.radius1)*2, (this.direction > 0 ? values.radius1 : values.radius2)*2);
     },
 
     addSphere: function (values) {
@@ -75,56 +116,8 @@ var objects = { // Массив, в котором будет хранится �
         object.translateX(this.totalWidth / 2 * this.direction);
         object.rotation.z = -(90 * Math.PI / 180);
         scene.add(object);
-
         this.addToArray(group, object, values);
-    },
-
-    addCylinder: function (values) {
-        values.radius2 = values.radius1;
-        values.height = values.radius2 * 2;
-        this.moveObjects(values.width, this.direction); // Двигаем элементы в сторону
-
-        // 2D
-        var group = draw.group();
-        group.add(draw.rect(values.width, values.height).colorIt());
-
-        //Axis rendering
-        group.add(draw.line(-axisPadding, values.height / 2, values.width + axisPadding, values.height / 2).dashIt(values.width));
-        group.placeIt(this.totalWidth, this.direction, true);
-
-        // 3D
-        var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius1, values.radius2, values.width, this.segments), new THREE.MeshPhongMaterial({
-            color: 0xF0F0F0,
-            shading: THREE.FlatShading
-        }));
-        object.translateX(this.totalWidth / 2 * this.direction);
-        object.rotation.z = -(90 * Math.PI / 180);
-        scene.add(object);
-        this.addToArray(group, object, values);
-
-        this.addLimit('width', values.radius2 * 2);
-    },
-
-    addCone: function (values) {
-        this.moveObjects(values.width, this.direction); // Двигаем элементы в сторону
-
-        // 2D
-        var group = draw.group();
-        group.add(draw.polygon(createPolyline(values)).colorIt());
-
-        // Axis rendering
-        group.add(draw.line(-axisPadding, values.radius1 > values.radius2 ? values.radius1 : values.radius2, values.width + axisPadding, values.radius1 > values.radius2 ? values.radius1 : values.radius2).dashIt(values.width));
-        group.placeIt(this.totalWidth, this.direction, true);
-
-        // 3D
-        var object = new THREE.Mesh(new THREE.CylinderGeometry(values.radius2, values.radius1, values.width, this.segments), new THREE.MeshPhongMaterial({
-            color: 0xF0F0F0,
-            shading: THREE.FlatShading
-        }));
-        object.translateX(this.totalWidth / 2 * this.direction);
-        object.rotation.z = -(90 * Math.PI / 180); scene.add(object);
-
-        this.addToArray(group, object, values)
+        limiter.addLimit('width', values.radius*2);
     },
 
     addToArray: function (d2, d3, values) {
@@ -164,18 +157,6 @@ var objects = { // Массив, в котором будет хранится �
         $.each(this.d3, function (i, e) {
             e.translateY(parseInt(selected.values.width) / 2 * (i < selected.n ? 1 : -1));
         });
-    },
-    addLimit: function (type, limit) {
-        //this.limit = new Object();
-        var d = [];
-        d[1] = 'right';
-        d[-1] = 'left';
-        this.limit[d[this.direction]] = new Object();
-        this.limit[d[this.direction]][type] = limit;
-        if(this.d2.length == 1){
-            this.limit[d[-this.direction]][type] = limit;
-        }
-        console.log(this.limit);
     }
 }
 
@@ -250,6 +231,89 @@ SVG.extend(SVG.Element, {
     }
 });
 
+var limiter = {
+    limit: {
+        2: {},
+        0: {}
+    },
+    addLimit: function (type, limit, limit2) {
+        this.limit[objects.direction + 1] = new Object();
+        this.limit[objects.direction + 1][type] = limit;
+        if(objects.d2.length == 1){
+            if(typeof limit2 !== "undefined"){
+                this.limit[-objects.direction + 1][type] = limit2;
+            } else {
+                this.limit[-objects.direction + 1][type] = limit;
+            }
+        }
+        var self = this;
+
+        $('input').attr('placeholder', '0').off('.con').closest('.form-group').removeClass('has-error');
+        $('button.accept').prop('disabled', false);
+
+        $('.arrows button').off('.limit').on('click.limit', function () {
+
+            if(objects.direction == 0) return this;
+
+            if(typeof(self.limit[objects.direction+1].radius) !== "undefined") {
+                $('input[name="radius' + (objects.direction > 0 ? 1 : 2) + '"], input[name="radius"]').attr('placeholder', 'не меньше ' + self.limit[objects.direction+1].radius)
+                    .on('keyup.con', function () {
+                        if($(this).val() < self.limit[objects.direction+1].radius && !$(this).closest('.form-group').hasClass('has-error')) {
+                            $(this).closest('.form-group').addClass('has-error');
+                            $('button.accept').prop('disabled', true);
+                        }
+                        if($(this).val() >= self.limit[objects.direction+1].radius && $(this).closest('.form-group').hasClass('has-error') || $(this).val() == '') {
+                            $(this).closest('.form-group').removeClass('has-error');
+                            $('button.accept').prop('disabled', false);
+                        }
+                    });
+            }
+            if(typeof(self.limit[objects.direction+1].width) !== "undefined") {
+
+                var c = {
+                    width: self.limit[objects.direction+1].width,
+                    height: self.limit[objects.direction+1].width
+                };
+                $('#cubeModal input[name="width"], #cubeModal input[name="height"]').attr('placeholder', 'не больше ' + c.width)
+                    .on('keyup.con', function () {
+
+                        c.height = Math.round(Math.sqrt(Math.pow(self.limit[objects.direction+1].width, 2) - Math.pow($('#cubeModal input[name="width"]').val(), 2))*10)/10;
+                        c.width = Math.round(Math.sqrt(Math.pow(self.limit[objects.direction+1].width, 2) - Math.pow($('#cubeModal input[name="height"]').val(), 2))*10)/10;
+
+                        console.log(c);
+                        console.log(self.limit[objects.direction+1].width);
+                        console.log($('#cubeModal input[name="height"]').val());
+
+
+                        $('#cubeModal input[name="height"]').attr('placeholder', (!isNaN(c.height) ? 'не больше ' + c.height : 'Введите значение ширины не больше ' + c.width +'!'));
+                        $('#cubeModal input[name="width"]').attr('placeholder', (!isNaN(c.width) ? 'не больше ' + c.width : 'Введите значение высоты не больше ' + c.height +'!'));
+
+                        if($('#cubeModal input[name="height"]').val() > c.height || isNaN(c.height) && !$('#cubeModal input[name="height"]').closest('.form-group').hasClass('has-error')){
+                            $('#cubeModal input[name="height"]').closest('.form-group').addClass('has-error');
+                            $('#cubeModal button.accept').prop('disabled', true);
+                        }
+                        if($('#cubeModal input[name="height"]').val() <= c.height && $('#cubeModal input[name="height"]').closest('.form-group').hasClass('has-error')){
+                            $('#cubeModal input[name="height"]').closest('.form-group').removeClass('has-error');
+                            $('#cubeModal button.accept').prop('disabled', false);
+                        }
+
+
+
+                        if($('#cubeModal input[name="width"]').val() > c.width || isNaN(c.width) && !$('#cubeModal input[name="width"]').closest('.form-group').hasClass('has-error')){
+                            $('#cubeModal input[name="width"]').closest('.form-group').addClass('has-error');
+                            $('#cubeModal button.accept').prop('disabled', true);
+                        }
+                        if($('#cubeModal input[name="width"]').val() <= c.width && $('#cubeModal input[name="width"]').closest('.form-group').hasClass('has-error')){
+                            $('#cubeModal input[name="width"]').closest('.form-group').removeClass('has-error');
+                            $('#cubeModal button.accept').prop('disabled', false);
+                        }
+                    });
+            }
+        });
+
+    }
+}
+
 // Инициализация 3D сцены технологией THREE.js
 // Выглядит оч круто
 
@@ -318,6 +382,10 @@ function init2D() {
 // Находим использованное модальное окно на основе closest
 function getClosestModal(e) {
     return $(e).closest('.modal');
+}
+
+function getR(a) {
+    return Math.round(Math.sqrt(Math.pow(a, 2) / 2)*10)/10;
 }
 
 // Получаем значения из модального окна в объекте
@@ -390,58 +458,63 @@ init2D();
 init3D();
 animate();
 
-$('.arrows button').click(function () { // вешаем событие на клик по стрелочке
-    var clickedDirection = objects.direction;
+// objects.addCube({width:100,height:100,depth:100}, 1);
+// $('.shapes > *').prop('disabled', true);
+// objects.direction = 0;
 
+// console.log('clickedDirection = ' + clickedDirection);
+// console.log('objects.direction = ' + objects.direction);
+
+$('.arrows button').click(function () { // вешаем событие на клик по стрелочке
+
+    if($(this).hasClass('active')){
+        $('.shapes > button').off('.openModal');
+        $(this).removeClass('active');
+        $('.shapes > *').prop('disabled', true);
+        objects.direction = 0;
+        return this;
+    }
 
     objects.direction = $(this).attr('direction') == 'right' ? 1 : -1; // Вычисляем направление
 
-    console.log('clickedDirection = ' + clickedDirection);
-    console.log('objects.direction = ' +objects.direction);
+    $('.arrows > *').removeClass('active');
+    $(this).addClass('active');
+    $('.shapes > *').prop('disabled', false);
 
+    $('button.accept').off('.createObject');
+    $('.shapes > button').off('.openModal');
 
-
-    //if(clickedDirection == 0) clickedDirection = objects.direction
-    if(objects.direction != clickedDirection){
-        $('.arrows > *').removeClass('active');
-        $(this).addClass('active');
-        $('.shapes > *').removeClass('disabled');
-
-        $('.btn.accept').click(function () {
-
-            var modal = getClosestModal(this).modal('hide'), // Закрываем модальное окно
-                action = modal.attr('id'), // Получаем че это вообще за модальное окно было
+    $('.shapes > button').on('click.openModal', function () {
+        $('button.accept').on('click.createObject', function () {
+            var modal = getClosestModal(this).modal('hide'); // Закрываем модальное окно
+            var action = modal.attr('id'), // Получаем че это вообще за модальное окно было
                 values = getValuesFromModal(modal); // Получаем данные из модального окна
             doAction(action, values, objects.direction);
-            console.log('new item!');
             if (objects.d2.length == 1) {
-                $('.arrows > *').removeClass('disabled');
+                $('.arrows > *').prop('disabled', false);
             }
             $('.arrows > *').removeClass('active');
-            $('.shapes > *').addClass('disabled');
+            $('.shapes > *').prop('disabled', true);
             objects.direction = 0;
-            clickedDirection = 0;
-            $('.btn.accept').unbind();
+            $('input').val('');
         });
+    });
+});
+$('button.close').click(function () {
+    $('button.accept').off('.createObject');
+})
 
-        $('.btn.close').click(function () {
-            $('.btn.accept').unbind();
-        })
-    } else {
-        if (objects.d2.length >= 1) {
-            $(this).removeClass('active');
-            $('.shapes > *').addClass('disabled');
-            $('.btn.accept').unbind();
-        }
-        objects.direction = 0;
-        clickedDirection = 0;
-    }
-
+$('.deleteButton').click(function () {
+    $('#delete button.accept').one('click', function () {
+        console.log('delete item!');
+        getClosestModal(this).modal('hide'); // Закрываем модальное окно
+        doAction('delete');
+    });
 });
 
 if (objects.d2.length < 1) { // если создаем первый элемент,
     $('.arrows button:last-child').click(); // то кликаем на первую попавшуюся стрелочку программой,
-    $('.arrows > *').addClass('disabled');
+    $('.arrows > *').prop('disabled', true);
 } // нахрена ее тыкать человеку
 
 // Это блок, стреляющий из камеры лучом по фигуре
@@ -463,7 +536,6 @@ $('canvas').click(function (event) {
     }
     render();
 });
-
 $(document).on('click', 'svg > g', function () {
     objectPicker.find(this).select();
     render();
@@ -474,9 +546,9 @@ $(document).on('click', '#drawing', function (e) {
         render();
     }
 });
-
-$('button').on("click", function (event) {
-    if ($(this).hasClass("disabled")) {
-        event.stopPropagation()
-    }
+$('button.disabled').click(function (e) {
+    e.stopPropagation();
+});
+$('input').on('keyup', function () {
+    $(this).val($(this).val().replace(/[^\d\.]/, ''));
 });
